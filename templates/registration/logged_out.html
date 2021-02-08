@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Вы вышли из системы{% endblock title%}
+{% block link %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'pages/form.css' %}">
+{% endblock link%}
+{% block content %}
+<main class="main container">
+    <div class="main__header">
+        <h1 class="main__title">Вы вышли из системы</h1>
+    </div>
+    <div class="row justify-content-center">
+        <div class="card">
+            <div class="tags__label">
+                <p>Вы вышли из своей учётной записи. Ждём вас снова! </p>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

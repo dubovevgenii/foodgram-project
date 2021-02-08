@@ -1,0 +1,26 @@
+<ul class="tags">
+    <li class="tags__item">
+        {% if 'b' in tags %}
+            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="{% url request.resolver_match.url_name %}?tags={{ tags|cut:"b" }}"></a>
+        {% else %}
+            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox" href="{% url request.resolver_match.url_name %}?tags={{ tags|add:"b" }}"></a>
+        {% endif %}
+        <label for="breakfast" class="tags__label">Завтрак</label>
+    </li>
+    <li class="tags__item">
+        {% if 'l' in tags %}
+            <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="{% url request.resolver_match.url_name %}?tags={{ tags|cut:"l" }}"></a>
+        {% else %}
+            <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox" href="{% url request.resolver_match.url_name %}?tags={{ tags|add:"l" }}"></a>
+        {% endif %}
+        <label for="lunch" class="tags__label">Обед</label>
+    </li>
+    <li class="tags__item">
+        {% if 'd' in tags %}
+            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="{% url request.resolver_match.url_name %}?tags={{ tags|cut:"d" }}"></a>
+        {% else %}
+            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox" href="{% url request.resolver_match.url_name %}?tags={{ tags|add:"d" }}"></a>
+        {% endif %}
+        <label for="dinner" class="tags__label">Ужин</label>
+    </li>
+</ul>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Подтверждение удаления{% endblock title%}
+{% block link %}
+{% load static %}
+<link rel="stylesheet" href="{% static '/pages/form.css' %}">
+{% endblock link%}
+{% block content %}
+{% load user_filters %}
+<main class="main container">
+    <div class="main__header">
+        <h1 class="main__title">Подтверждение удаления</h1>
+    </div>
+    <div class="form-container">
+        <form class="form" method="post">
+            {% csrf_token %}
+            <p class="form__info-text">
+                Вы уверены, что хотите удалить "{{ object }}"?
+            </p>
+
+            <div class="form__footer">
+                <button type="submit" class="button button_style_blue">Подтвердить</button>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock content %}
