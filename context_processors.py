@@ -21,13 +21,3 @@ def counter(request):
 def get_tags(request):
     """Function enabling tags context on any page."""
     return {'tags': Tag.objects.all()}
-
-
-
-
-
-# def url_filters(request):
-#     filters = request.GET.getlist('filters')
-#     filters.insert(0, '')
-#     filters = '&filters='.join(filters)
-#     return {'filters': filters}
