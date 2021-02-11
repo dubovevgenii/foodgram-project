@@ -10,30 +10,16 @@
     <div class="main__header">
         <h1 class="main__title">{{ author.get_full_name }}</h1>
         <ul class="tags">
+        {% for tag in tags %}
             <li class="tags__item">
-                {% if 'b' in tags %}
-                    <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="{% url request.resolver_match.url_name author.username %}?tags={{ tags|cut:"b" }}"></a>
+                {% if tag.title.0 in filter %}
+                    <a id="{{ tag.value }}" class="tags__checkbox tags__checkbox_style_{{tag.color}} tags__checkbox_active" href="{% url request.resolver_match.url_name author.username %}?filter={{ filter|cut:tag.title.0 }}"></a>
                 {% else %}
-                    <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox" href="{% url request.resolver_match.url_name author.username %}?tags={{ tags|add:"b" }}"></a>
+                    <a id="{{ tag.value }}" class="tags__checkbox tags__checkbox_style_{{tag.color}} tags__checkbox" href="{% url request.resolver_match.url_name author.username %}?filter={{ filter|add:tag.title.0 }}"></a>
                 {% endif %}
-                <label for="breakfast" class="tags__label">Завтрак</label>
+                <label class="tags__label">{{ tag.title }}</label>
             </li>
-            <li class="tags__item">
-                {% if 'l' in tags %}
-                    <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="{% url request.resolver_match.url_name author.username %}?tags={{ tags|cut:"l" }}"></a>
-                {% else %}
-                    <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox" href="{% url request.resolver_match.url_name author.username %}?tags={{ tags|add:"l" }}"></a>
-                {% endif %}
-                <label for="lunch" class="tags__label">Обед</label>
-            </li>
-            <li class="tags__item">
-                {% if 'd' in tags %}
-                    <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="{% url request.resolver_match.url_name author.username %}?tags={{ tags|cut:"d" }}"></a>
-                {% else %}
-                    <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox" href="{% url request.resolver_match.url_name author.username %}?tags={{ tags|add:"d" }}"></a>
-                {% endif %}
-                <label for="dinner" class="tags__label">Ужин</label>
-            </li>
+        {% endfor %}
         </ul>
     </div>
     <div class="author-subscribe" data-author={{ author.id }}>

@@ -7,24 +7,24 @@ from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import ListView, DetailView, CreateView, \
-    DeleteView, UpdateView
+from django.views.generic import (ListView, DetailView, CreateView,
+                                  DeleteView, UpdateView)
 from reportlab.pdfbase import pdfmetrics, ttfonts
 from reportlab.pdfgen import canvas
 
+from foodgram.settings import ELEMENTS_PER_PAGE
 from users.models import User
 from .forms import CreateRecipeForm
-from .models import Recipe, Favorite, Composition, Ingredient, Subscribe, \
-    Purchase
+from .models import Recipe, Composition, Purchase
 
 
 class RecipeListView(ListView):
     """View-function for index page (url "")."""
-    paginate_by = 6
+    paginate_by = ELEMENTS_PER_PAGE
     template_name = 'index.html'
 
     def get(self, *args, **kwargs):
-        self.tags = self.request.GET.get('tags')
+        self.tags = self.request.GET.get('filter')
         if self.tags and sorted(self.tags) == ['b', 'd', 'l']:
             return redirect('index')
         return super(RecipeListView, self).get(*args, **kwargs)
@@ -46,35 +46,15 @@ class RecipeListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if self.request.user.is_authenticated:
-            in_purchases = Recipe.objects.filter(
-                purchase_recipe__user=self.request.user)
-            in_favorites = Recipe.objects.filter(
-                favorite_recipe__user=self.request.user)
-        else:
-            in_favorites = None
-            if self.request.session.get('cart', []):
-                cart = self.request.session['cart']
-                in_purchases = Recipe.objects.filter(pk__in=cart)
-            else:
-                self.request.session['cart'] = []
-                in_purchases = []
-
-        context['in_favorites'] = in_favorites
-        context['in_purchases'] = in_purchases
-
-        if len(in_purchases) >= 1:
-            context['purchases_count'] = len(in_purchases)
-
         if not self.tags or sorted(self.tags) == ['b', 'd', 'l']:
-            context['tags'] = 'bdl'
+            context['filter'] = 'bdl'
         else:
-            context['tags'] = self.tags
+            context['filter'] = self.tags
         return context
 
 
 class RecipeDetailView(DetailView):
-    """View-function for recipe page (url "recipe/post_id")."""
+    """View-function for recipe page (url "recipe/slug/edit")."""
     model = Recipe
     template_name = 'recipe.html'
 
@@ -82,26 +62,6 @@ class RecipeDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['ingredient_list'] = Composition.objects.filter(
             recipe_id__slug=self.kwargs['slug'])
-
-        if self.request.user.is_authenticated:
-            in_favorites = Favorite.objects.filter(
-                user=self.request.user, recipe__slug=self.kwargs['slug'])
-            in_purchases = Recipe.objects.filter(
-                purchase_recipe__user=self.request.user)
-        else:
-            in_favorites = None
-            if self.request.session.get('cart', []):
-                cart = self.request.session['cart']
-                in_purchases = Recipe.objects.filter(pk__in=cart)
-            else:
-                self.request.session['cart'] = []
-                in_purchases = []
-
-        context['in_favorites'] = in_favorites
-        context['in_shopping_list'] = in_purchases
-
-        if len(in_purchases) >= 1:
-            context['purchases_count'] = len(in_purchases)
         return context
 
 
@@ -117,27 +77,11 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.save()
-
-        for param in self.request.POST:
-            if 'nameIngredient' in param:
-                quantity = self.request.POST.get(
-                    'valueIngredient' + param[param.find('_'):])
-                ingredient = Ingredient.objects.get(
-                    title=self.request.POST.get(param))
-                new_composition = Composition(recipe_id=form.instance.id,
-                                              ingredient_id=ingredient.id,
-                                              quantity=quantity)
-                new_composition.save()
         return super(RecipeCreateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['compositions'] = Composition.objects.filter()
-
-        in_purchases = Recipe.objects.filter(
-                purchase_recipe__user=self.request.user)
-        if len(in_purchases) >= 1:
-            context['purchases_count'] = len(in_purchases)
         return context
 
 
@@ -159,40 +103,24 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.save()
-
-        composition = Composition.objects.filter(recipe_id=form.instance.id)
-        composition.delete()
-
-        for param in self.request.POST:
-            if 'nameIngredient' in param:
-                quantity = self.request.POST.get(
-                    'valueIngredient' + param[param.find('_'):])
-                ingredient = Ingredient.objects.get(
-                    title=self.request.POST.get(param))
-
-                new_composition = Composition(recipe_id=form.instance.id,
-                                              ingredient_id=ingredient.id,
-                                              quantity=quantity)
-                new_composition.save()
-
         return super(RecipeUpdateView, self).form_valid(form)
 
 
 class RecipeDeleteView(LoginRequiredMixin, DeleteView):
     """View-function for recipe deleting (url "recipe/<slug:slug>/delete")."""
     model = Recipe
-    template_name = 'delete_account.html'
+    template_name = 'misc/delete_account.html'
     success_url = reverse_lazy('index')
 
 
 class ProfileListView(ListView):
     """View-function for profile page (url "username")."""
-    paginate_by = 6
+    paginate_by = ELEMENTS_PER_PAGE
     template_name = 'profile.html'
 
     def get_queryset(self):
         self.user = get_object_or_404(User, username=self.kwargs['username'])
-        self.tags = self.request.GET.get('tags')
+        self.tags = self.request.GET.get('filter')
 
         if not self.tags or sorted(self.tags) == ['b', 'd', 'l']:
             return Recipe.objects.filter(author=self.user)
@@ -211,39 +139,16 @@ class ProfileListView(ListView):
         context = super().get_context_data(**kwargs)
         context['author'] = self.user
 
-        if self.request.user.is_authenticated:
-            following = Subscribe.objects.filter(user=self.request.user,
-                                                 author=self.user)
-            in_favorites = Recipe.objects.filter(
-                favorite_recipe__user=self.request.user)
-            in_purchases = Recipe.objects.filter(
-                purchase_recipe__user=self.request.user)
-        else:
-            following = None
-            in_favorites = None
-            if self.request.session.get('cart', []):
-                cart = self.request.session['cart']
-                in_purchases = Recipe.objects.filter(pk__in=cart)
-            else:
-                self.request.session['cart'] = []
-                in_purchases = []
-        context['following'] = following
-        context['in_favorites'] = in_favorites
-        context['in_shopping_list'] = in_purchases
-
-        if len(in_purchases) >= 1:
-            context['purchases_count'] = len(in_purchases)
-
         if not self.tags or sorted(self.tags) == ['b', 'd', 'l']:
-            context['tags'] = 'bdl'
+            context['filter'] = 'bdl'
         else:
-            context['tags'] = self.tags
+            context['filter'] = self.tags
         return context
 
 
 class SubscribeListView(LoginRequiredMixin, ListView):
     """View-function for subscriptions (url "subscribes")."""
-    paginate_by = 6
+    paginate_by = ELEMENTS_PER_PAGE
     template_name = 'follow.html'
 
     def get_queryset(self):
@@ -252,21 +157,16 @@ class SubscribeListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        in_purchases = Recipe.objects.filter(
-                purchase_recipe__user=self.request.user)
-        context['in_purchases'] = in_purchases
-        if len(in_purchases) >= 1:
-            context['purchases_count'] = len(in_purchases)
         return context
 
 
 class FavoriteListView(LoginRequiredMixin, ListView):
     """View-function for favorites (url "favorites")."""
-    paginate_by = 6
+    paginate_by = ELEMENTS_PER_PAGE
     template_name = 'favorite.html'
 
     def get_queryset(self):
-        self.tags = self.request.GET.get('tags')
+        self.tags = self.request.GET.get('filter')
         if not self.tags or sorted(self.tags) == ['b', 'd', 'l']:
             return Recipe.objects.filter(
                 favorite_recipe__user=self.request.user)
@@ -284,19 +184,10 @@ class FavoriteListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        in_favorites = Recipe.objects.filter(
-            favorite_recipe__user=self.request.user)
-        in_purchases = Recipe.objects.filter(
-            purchase_recipe__user=self.request.user)
-        context['in_favorites'] = in_favorites
-        context['in_purchases'] = in_purchases
-        if len(in_purchases) >= 1:
-            context['purchases_count'] = len(in_purchases)
-
         if not self.tags or sorted(self.tags) == ['b', 'd', 'l']:
-            context['tags'] = 'bdl'
+            context['filter'] = 'bdl'
         else:
-            context['tags'] = self.tags
+            context['filter'] = self.tags
         return context
 
 
@@ -311,24 +202,6 @@ class PurchaseListView(ListView):
         else:
             cart = self.request.session['cart']
             return Recipe.objects.filter(pk__in=cart)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            in_purchases = Recipe.objects.filter(
-                purchase_recipe__user=self.request.user)
-        else:
-            if self.request.session.get('cart', []):
-                cart = self.request.session['cart']
-                in_purchases = Recipe.objects.filter(pk__in=cart)
-            else:
-                self.request.session['cart'] = []
-                in_purchases = []
-
-        context['in_purchases'] = in_purchases
-        if len(in_purchases) >= 1:
-            context['purchases_count'] = len(in_purchases)
-        return context
 
 
 class PurchaseDeleteView(DeleteView):

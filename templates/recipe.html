@@ -3,8 +3,9 @@
 {% block link %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'pages/single.css' %}">
-{% endblock link%}
+{% endblock link %}
 {% block content %}
+{% load recipe_filters %}
     <main class="main container">
         <div class="single-card" data-id={{ recipe.id }} data-author={{ recipe.author_id }}>
             {% load thumbnail %}
@@ -17,7 +18,7 @@
                     <h1 class="single-card__title">{{ recipe.title }}</h1>
                     {% if user.is_authenticated %}
                         <div class="single-card__favorite">
-                            {% if in_favorites %}
+                            {% if recipe|in_favorites:user %}
                                 <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_big icon-favorite_active"></span></button>
                                 <div class="single-card__favorite-tooltip tooltip">Удалить из избранного</div>
                             {% else %}
@@ -37,17 +38,13 @@
                     <ul class="single-card__items">
                         <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span>{{ recipe.author.get_full_name }}</p></li>
                         {% if recipe.author == request.user %}
-                            <li class="single-card__item">  <a style="margin-left: 2.5em" href="{% url 'recipe_edit' recipe.id %}" class="single-card__text">Редактировать рецепт</a></li>
+                            <li class="single-card__item">  <a style="margin-left: 2.5em" href="{% url 'recipe_edit' recipe.slug %}" class="single-card__text">Редактировать рецепт</a></li>
                         {% endif %}
                     </ul>
                 </div>
                 <ul class="single-card__items">
                     <li class="single-card__item">
-                        {% if recipe in in_shopping_list %}
-                            <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span>Рецепт добавлен</button>
-                        {% else %}
-                            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
-                        {% endif %}
+                        {% include "includes/purchase_item.html" with recipe=recipe %}
                     <li class="single-card__item" data-author={{ recipe.author_id }}>
                         {% if following %}
                             <button class="button button_style_light-blue button_size_subscribe" data-author={{ recipe.author_id }} name="subscribe">Отписаться от автора</button>

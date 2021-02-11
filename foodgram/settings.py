@@ -70,6 +70,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'context_processors.counter',
+                'context_processors.get_tags',
             ],
         },
     },
@@ -132,6 +134,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SITE_ID = 1
+
+ELEMENTS_PER_PAGE = 6
 
 # Login/Logout
 

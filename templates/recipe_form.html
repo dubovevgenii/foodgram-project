@@ -14,42 +14,45 @@
         {% if not form.instance.pk %}
             <form class="form" method="post" enctype="multipart/form-data" action="{% url 'new_recipe' %}">
         {% else %}
-            <form class="form" method="post" enctype="multipart/form-data" action="{% url 'recipe_edit' recipe.id %}">
+            <form class="form" method="post" enctype="multipart/form-data" action="{% url 'recipe_edit' recipe.slug %}">
         {% endif %}
         {% csrf_token %}
             <div class="form__group">
                 <label for="{{ form.title.id_for_label }}" class="form__label">{{ form.title.label }}</label>
                 <div class="form__field-group">
                     {{ form.title|addclass:"form__input" }}
-                    {% for error in form.errors %}
-                        <span class="form__error">
-                            {{ error|escape }}
-                        </span>
-                    {% endfor %}
+                    {% if form.errors %}
+                        {% for error in form.title.errors %}
+                            <span class="form__error">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             <div class="form__group">
                 <p class="form__label">{{ form.tags.label }}</p>
                 <div class="form__field-group">
                     <div class="tags">
-                        <div class="tags__item">
-                            <input type="checkbox" class="tags__checkbox tags__checkbox_style_orange" name="tags" value="1" id="id_tags_0" {% if 1 in form.tags.value%}checked{% endif %}>
-                            <label for="id_tags_0" class="tags__label">Завтрак</label>
-                        </div>
-                        <div class="tags__item">
-                            <input type="checkbox" class="tags__checkbox tags__checkbox_style_green" name="tags" value="2" id="id_tags_1" {% if 2 in form.tags.value%}checked{% endif %}>
-                            <label for="id_tags_1" class="tags__label">Обед</label>
-                        </div>
-                        <div class="tags__item">
-                            <input type="checkbox" class="tags__checkbox tags__checkbox_style_purple" name="tags" value="3" id="id_tags_2" {% if 3 in form.tags.value%}checked{% endif %}>
-                            <label for="id_tags_2" class="tags__label">Ужин</label>
-                        </div>
+                    {% if form.instance.pk %}
+                        {% for tag in tags %}
+                            <div class="tags__item">
+                                <input type="checkbox" class="tags__checkbox tags__checkbox_style_{{ tag.color }}" name="tags" value="{{ tag.id }}" id="id_{{ tag.id }}" {% if tag in recipe.tags.all %}checked{% endif %}>
+                                <label for="id_{{ tag.id }}" class="tags__label">{{ tag.display_name }}</label>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {% for tag in form.tags.field.choices.queryset %}
+                            <div class="tags__item">
+                                <input type="checkbox" class="tags__checkbox tags__checkbox_style_{{ tag.color }}" name="tags" value="{{ tag.id }}" id="id_{{ tag.id }}">
+                                <label for="id_{{ tag.id }}" class="tags__label">{{ tag.display_name }}</label>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     </div>
-                    {% for error in form.errors %}
-                        <span class="form__error">
-                            {{ error|escape }}
-                        </span>
-                    {% endfor %}
+                    {% if form.errors %}
+                        {% for error in form.tags.errors %}
+                            <span class="form__error">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             <div class="form__group">
@@ -77,7 +80,6 @@
                         {% endif %}
                     </div>
                     <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-                    <span class="form__error"></span>
                 </div>
             </div>
             <div class="form__group">
@@ -85,14 +87,22 @@
                 <div class="form__field-group form__field-group_time">
                     {{ form.preparing_time|addclass:"form__input" }}
                     <label for="{{ form.preparing_time.id_for_label }}" class="form__label">минут</label>
-                    <span class="form__error"></span>
+                    {% if form.errors %}
+                        {% for error in form.preparing_time.errors %}
+                            <span class="form__error">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             <div class="form__group">
                 <label for="{{ form.description.id_for_label }}" class="form__label">{{ form.description.label }}</label>
                 <div class="form__field-group">
                     {{ form.description|addclass:"form__textarea" }}
-                    <span class="form__error"></span>
+                    {% if form.errors %}
+                        {% for error in form.description.errors %}
+                            <span class="form__error">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             <div class="form__group">
@@ -100,15 +110,24 @@
                 <div class="form__field-group">
                     <label for="id_image" class="form__file-button">Выбрать файл</label>
                     {{ form.image|addclass:"form__file" }}
-                    <span class="form__error"></span>
+                    {% if form.errors %}
+                        {% for error in form.image.errors %}
+                            <span class="form__error">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
+            {% if form.errors %}
+                {% for error in form.non_field.errors %}
+                    <span class="form__error">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
             <div class="form__footer">
                 {% if not form.instance.pk %}
                     <button type="submit" class="button button_style_blue">Создать рецепт</button>
                 {% else %}
                     <button type="submit" class="button button_style_blue">Сохранить</button>
-                    <a style="margin-left: 2.5em" href="{% url 'recipe_delete' form.instance.pk %}" class="form__ingredient-link">Удалить</a>
+                    <a style="margin-left: 2.5em" href="{% url 'recipe_delete' form.instance.slug %}" class="form__ingredient-link">Удалить</a>
                 {% endif %}
             </div>
         </form>

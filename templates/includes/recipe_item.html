@@ -1,3 +1,4 @@
+{% load recipe_filters %}
 <div class="card" data-id={{ recipe.id }}>
     {% load thumbnail %}
     {% thumbnail recipe.image "480x480" crop="center" upscale=True as im %}
@@ -16,17 +17,7 @@
         </div>
     </div>
     <div class="card__footer">
-        {% if recipe in in_purchases %}
-            <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span>Рецепт добавлен</button>
-        {% else %}
-            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
-        {% endif %}
-        {% if user.is_authenticated %}
-            {% if recipe in in_favorites %}
-                <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>
-            {% else %}
-                <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
-            {% endif %}
-        {% endif %}
+        {% include "includes/purchase_item.html" with recipe=recipe %}
+        {% include "includes/favorite_item.html" with recipe=recipe %}
     </div>
 </div>
