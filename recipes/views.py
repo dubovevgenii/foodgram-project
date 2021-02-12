@@ -216,16 +216,16 @@ class PurchaseDeleteView(DeleteView):
 @csrf_protect
 def purchases(request):
     if request.user.is_authenticated:
-        user_cart = Purchase.objects.filter(user=request.user)\
-            .values_list('recipe_id', flat=True)
-        purchases = Composition.objects.filter(recipe__in=user_cart)\
-            .values('ingredient__title', 'ingredient__unit')\
-            .annotate(total=Sum('quantity'))
+        user_cart = (Purchase.objects.filter(user=request.user)
+                     .values_list('recipe_id', flat=True))
+        purchases = (Composition.objects.filter(recipe__in=user_cart)
+                     .values('ingredient__title', 'ingredient__unit')
+                     .annotate(total=Sum('quantity')))
     else:
         cart = request.session['cart']
-        purchases = Composition.objects.filter(recipe_id__in=cart)\
-            .values('ingredient__title', 'ingredient__unit')\
-            .annotate(total=Sum('quantity'))
+        purchases = (Composition.objects.filter(recipe_id__in=cart)
+                     .values('ingredient__title', 'ingredient__unit')
+                     .annotate(total=Sum('quantity')))
     today = date.today()
     filename = str(request.user.username) + today.strftime('%Y-%m-%d')
     buffer = io.BytesIO()
