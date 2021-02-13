@@ -20,7 +20,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Lint with flake8
-      run: flake8 . --exclude foodgram_project/settings.py
+      run: flake8 . --exclude foodgram/settings.py
 
     - name: Test with pytest
       run: pytest

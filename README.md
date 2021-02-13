@@ -1,6 +1,6 @@
 # foodgram-project
 
-![Yamdb Actions Status](https://github.com/dubovevgenii/yamdb_final/workflows/YaMDB-app%20workflow/badge.svg)
+![Yamdb Actions Status](https://github.com/dubovevgenii/yamdb_final/workflows/foodgram%20workflow/badge.svg)
 
 Test link: http://130.193.45.248:8000
 
