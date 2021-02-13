@@ -12,7 +12,7 @@ services:
     env_file:
       - ./.env
   web:
-    image: johnydubov/api_yamdb:latest
+    image: johnydubov/foodgram_project:latest
     restart: always
     volumes:
       - staticfiles:/code/static
