@@ -20,7 +20,7 @@ Be sure Docker is installed on remote system. Visit [official project site](http
 To clone project to your environment run
 
 ```
-git clone https://github.com/dubovevgenii/yamdb_final.git
+git clone https://github.com/dubovevgenii/foodgram-project.git
 ```
 
 ### Deployment
