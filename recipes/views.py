@@ -200,8 +200,11 @@ class PurchaseListView(ListView):
             return Recipe.objects.filter(
                 purchase_recipe__user=self.request.user)
         else:
-            cart = self.request.session['cart']
-            return Recipe.objects.filter(pk__in=cart)
+            if 'cart' in self.request.session:
+                cart = self.request.session['cart']
+                return Recipe.objects.filter(pk__in=cart)
+            else:
+                return None
 
 
 class PurchaseDeleteView(DeleteView):

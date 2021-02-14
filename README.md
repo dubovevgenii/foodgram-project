@@ -83,13 +83,14 @@ python manage.py collectstatic
 Migrate
 
 ```
+python manage.py makemigrations recipes
 python manage.py migrate
 ```
 
 Create superuser
 
 ```
-python manage.py creatsuperuser
+python manage.py createsuperuser
 ```
 
 Fill the database with initial test data
