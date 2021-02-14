@@ -68,7 +68,7 @@ Run
 sudo docker ps
 ```
 
-and find ID of infra_sp2_web container. After that execute
+and find ID of praktikum_web_1 container. After that execute
 
 ```
 sudo docker exec -it <CONTAINER ID> bash
