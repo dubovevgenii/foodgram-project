@@ -2,11 +2,13 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from .models import Recipe, Tag, Ingredient, Composition
+from .validators import GreaterThanValidator
 
 
 class CreateRecipeForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, queryset=Tag.objects.all())
+    preparing_time = forms.IntegerField(validators=[GreaterThanValidator(0)])
 
     class Meta:
         model = Recipe
@@ -24,6 +26,7 @@ class CreateRecipeForm(forms.ModelForm):
                       }
 
     def clean(self):
+        cleaned_data = super(CreateRecipeForm, self).clean()
         ingredients_list = []
         for param in self.data.keys():
             if 'nameIngredient' in param:
@@ -31,9 +34,8 @@ class CreateRecipeForm(forms.ModelForm):
                 ingredients_list.append(id)
 
         if not ingredients_list:
-            raise ValidationError('Не выбраны ингредиенты')
+            raise forms.ValidationError('Не выбраны ингредиенты')
 
-        cleaned_data = self.cleaned_data
         self.cleaned_data['ingredients'] = []
         self.cleaned_data['quantities'] = []
 
@@ -42,8 +44,8 @@ class CreateRecipeForm(forms.ModelForm):
             quantity = self.data.get(f'valueIngredient_{id}')
 
             if int(quantity) <= 0:
-                raise ValidationError('Количество не может быть меньше '
-                                      'или равно нулю)')
+                raise forms.ValidationError('Количество не может быть меньше '
+                                      'или равно нулю')
 
             self.cleaned_data['ingredients'].append(title)
             self.cleaned_data['quantities'].append(quantity)

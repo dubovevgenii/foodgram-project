@@ -10,7 +10,9 @@
     <div class="main__header">
         <h1 class="main__title">Список покупок</h1>
     </div>
+    {% if counter %}
     <div class="card-list card-list_column">
+
         <ul class="shopping-list">
             {% for recipe in object_list %}
                 <li class="shopping-list__item" data-id={{ recipe.id }}>
@@ -28,6 +30,10 @@
         </ul>
         <a href="{% url 'return_pdf' %}"><button class="button button_style_blue">Скачать список</button></a>
     </div>
+    {% else %}
+        <div class="tags__label"><p>Ваш список покупок пуст. Добавьте сюда что-нибудь.</p></div>
+    {% endif %}
+
 </main>
 {% endblock content %}
 {% block script %}

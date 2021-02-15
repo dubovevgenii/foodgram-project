@@ -46,10 +46,12 @@
                     <li class="single-card__item">
                         {% include "includes/purchase_item.html" with recipe=recipe %}
                     <li class="single-card__item" data-author={{ recipe.author_id }}>
-                        {% if following %}
-                            <button class="button button_style_light-blue button_size_subscribe" data-author={{ recipe.author_id }} name="subscribe">Отписаться от автора</button>
-                        {% else %}
-                            <button class="button button_style_light-blue button_size_subscribe" data-author={{ recipe.author_id }} name="subscribe" data-out>Подписаться на автора</button>
+                        {% if user.id != recipe.author_id %}
+                            {% if following %}
+                                <button class="button button_style_light-blue button_size_subscribe" data-author={{ recipe.author_id }} name="subscribe">Отписаться от автора</button>
+                            {% else %}
+                                <button class="button button_style_light-blue button_size_subscribe" data-author={{ recipe.author_id }} name="subscribe" data-out>Подписаться на автора</button>
+                            {% endif %}
                         {% endif %}
                     </li>
                 </ul>

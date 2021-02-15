@@ -2,6 +2,7 @@ from autoslug import AutoSlugField
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from recipes.validators import GreaterThanValidator
 from users.models import User
 
 
@@ -52,6 +53,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(Tag, related_name='recipe_tag',
                                   verbose_name='теги')
     preparing_time = models.PositiveSmallIntegerField(
+        validators=[GreaterThanValidator(0)],
         verbose_name='время приготовления в минутах')
     slug = AutoSlugField(populate_from='title', allow_unicode=True,
                          unique=True)

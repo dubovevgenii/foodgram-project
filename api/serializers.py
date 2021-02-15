@@ -22,6 +22,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
         fields = ['id', 'user']
         model = Subscribe
 
+    def validate(self, data):
+        """Check that user is trying to follow themselves."""
+        message = "User can't subscribe this author"
+        if self.id == self.user:
+            raise serializers.ValidationError(message)
+        return data
+
 
 class PurchaseSerializer(serializers.ModelSerializer):
     """Serializer for Purchase model"""

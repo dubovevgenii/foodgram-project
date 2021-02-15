@@ -17,17 +17,19 @@
                 {% else %}
                     <a id="{{ tag.value }}" class="tags__checkbox tags__checkbox_style_{{tag.color}} tags__checkbox" href="{% url request.resolver_match.url_name author.username %}?filter={{ filter|add:tag.title.0 }}"></a>
                 {% endif %}
-                <label class="tags__label">{{ tag.title }}</label>
+                <label class="tags__label">{{ tag.display_name }}</label>
             </li>
         {% endfor %}
         </ul>
     </div>
     <div class="author-subscribe" data-author={{ author.id }}>
         <p style="padding: 0 0 2em 0;">
-            {% if following %}
-                <button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button>
-            {% else %}
-                <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button>
+            {% if user.id != author.id %}
+                {% if following %}
+                    <button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button>
+                {% else %}
+                    <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button>
+                {% endif %}
             {% endif %}
         </p>
     </div>
