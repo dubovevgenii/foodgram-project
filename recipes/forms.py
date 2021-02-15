@@ -1,5 +1,4 @@
 from django import forms
-from django.core.exceptions import ValidationError
 
 from .models import Recipe, Tag, Ingredient, Composition
 from .validators import GreaterThanValidator
@@ -45,7 +44,7 @@ class CreateRecipeForm(forms.ModelForm):
 
             if int(quantity) <= 0:
                 raise forms.ValidationError('Количество не может быть меньше '
-                                      'или равно нулю')
+                                            'или равно нулю')
 
             self.cleaned_data['ingredients'].append(title)
             self.cleaned_data['quantities'].append(quantity)
