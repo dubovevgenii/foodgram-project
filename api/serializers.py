@@ -25,7 +25,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Check that user is trying to follow themselves."""
         message = "User can't subscribe this author"
-        if self.id == self.user:
+        if data['author_id'] == self.context['request'].user.id:
             raise serializers.ValidationError(message)
         return data
 

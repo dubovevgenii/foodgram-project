@@ -155,10 +155,6 @@ class SubscribeListView(LoginRequiredMixin, ListView):
         return User.objects.filter(
             subscribing__user=self.request.user).order_by('username')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
 
 class FavoriteListView(LoginRequiredMixin, ListView):
     """View-function for favorites (url "favorites")."""

@@ -1,6 +1,6 @@
 from django import template
 
-from recipes.models import Purchase, Favorite
+from recipes.models import Purchase, Favorite, Subscribe
 
 register = template.Library()
 
@@ -25,6 +25,12 @@ def in_purchases_not_auth(recipe, request):
 @register.filter
 def in_favorites(recipe, user):
     exam = Favorite.objects.filter(user=user, recipe=recipe).exists()
+    return exam
+
+
+@register.filter
+def in_subscribes(author, user):
+    exam = Subscribe.objects.filter(user=user, author=author).exists()
     return exam
 
 

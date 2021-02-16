@@ -30,6 +30,6 @@ services:
       - mediafiles:/media
       - ./nginx/host.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "8000:80"
+      - 8000:80
     depends_on:
       - web

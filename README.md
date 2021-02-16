@@ -2,7 +2,7 @@
 
 ![Actions Status](https://github.com/dubovevgenii/foodgram-project/workflows/foodgram-project%20workflow/badge.svg)
 
-Test link: http://130.193.45.248:8000
+Test link: http://130.193.45.248
 
 This is an online service where users can publish recipes, subscribe to publications of other users, add recipes they like to the favorites list, and download a summary list of products needed to prepare one or more selected dishes before going to the store.
 

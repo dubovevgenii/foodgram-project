@@ -37,7 +37,8 @@ class FavoriteDetail(CustomAPIView):
 class SubscribeDetail(CustomAPIView):
     """View for subscribe model API."""
     def post(self, request):
-        serializer = SubscribeSerializer(data=request.data)
+        serializer = SubscribeSerializer(data=request.data,
+                                         context={'request': request})
         if serializer.is_valid():
             serializer.save(user=request.user)
             return JsonResponse(self.TRUE_RESPONSE)

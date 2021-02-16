@@ -36,7 +36,7 @@
                 <div class="single-card__items single-card__items_column">
                     <p class="single-card__text"><span class="icon-time"></span> {{ recipe.preparing_time }} мин.</p>
                     <ul class="single-card__items">
-                        <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span>{{ recipe.author.get_full_name }}</p></li>
+                        <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span> <a href="{% url 'profile' recipe.author %}" style="color: black">{{ recipe.author.get_full_name }}</a></p>
                         {% if recipe.author == request.user %}
                             <li class="single-card__item">  <a style="margin-left: 2.5em" href="{% url 'recipe_edit' recipe.slug %}" class="single-card__text">Редактировать рецепт</a></li>
                         {% endif %}
@@ -46,8 +46,8 @@
                     <li class="single-card__item">
                         {% include "includes/purchase_item.html" with recipe=recipe %}
                     <li class="single-card__item" data-author={{ recipe.author_id }}>
-                        {% if user.id != recipe.author_id %}
-                            {% if following %}
+                        {% if user.is_authenticated and user.id != author.id%}
+                            {% if recipe.author|in_subscribes:user %}
                                 <button class="button button_style_light-blue button_size_subscribe" data-author={{ recipe.author_id }} name="subscribe">Отписаться от автора</button>
                             {% else %}
                                 <button class="button button_style_light-blue button_size_subscribe" data-author={{ recipe.author_id }} name="subscribe" data-out>Подписаться на автора</button>
