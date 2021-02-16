@@ -46,7 +46,7 @@
                     <li class="single-card__item">
                         {% include "includes/purchase_item.html" with recipe=recipe %}
                     <li class="single-card__item" data-author={{ recipe.author_id }}>
-                        {% if user.is_authenticated and user.id != author.id%}
+                        {% if user.is_authenticated and user.id != recipe.author.id%}
                             {% if recipe.author|in_subscribes:user %}
                                 <button class="button button_style_light-blue button_size_subscribe" data-author={{ recipe.author_id }} name="subscribe">Отписаться от автора</button>
                             {% else %}
