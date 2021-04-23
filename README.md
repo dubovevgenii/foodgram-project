@@ -90,7 +90,7 @@ python manage.py migrate
 Create superuser
 
 ```
-python manage.py createsuperuser
+
 ```
 
 Fill the database with initial test data
