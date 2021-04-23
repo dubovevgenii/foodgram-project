@@ -226,7 +226,7 @@ def purchases(request):
                      .values('ingredient__title', 'ingredient__unit')
                      .annotate(total=Sum('quantity')))
     today = date.today()
-    filename = str(request.user.username) + today.strftime('%Y-%m-%d')
+    filename = 'Purchases' + '_' + today.strftime('%Y-%m-%d') + '.pdf'
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer)
     font_object = ttfonts.TTFont('Arial', './static/fonts/arial_cyr.ttf')

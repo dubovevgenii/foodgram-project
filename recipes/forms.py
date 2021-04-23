@@ -5,6 +5,7 @@ from .validators import GreaterThanValidator
 
 
 class CreateRecipeForm(forms.ModelForm):
+    use_required_attribute = False
     tags = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, queryset=Tag.objects.all())
     preparing_time = forms.IntegerField(validators=[GreaterThanValidator(0)])
@@ -38,6 +39,8 @@ class CreateRecipeForm(forms.ModelForm):
         self.cleaned_data['ingredients'] = []
         self.cleaned_data['quantities'] = []
 
+        ingredients_all = Ingredient.objects.values_list('title')
+
         for id in ingredients_list:
             title = self.data.get(f'nameIngredient_{id}')
             quantity = self.data.get(f'valueIngredient_{id}')
@@ -45,9 +48,12 @@ class CreateRecipeForm(forms.ModelForm):
             if int(quantity) <= 0:
                 raise forms.ValidationError('Количество не может быть меньше '
                                             'или равно нулю')
+            if title not in ingredients_all:
+                raise forms.ValidationError('Ингредиента нет в списке')
 
             self.cleaned_data['ingredients'].append(title)
             self.cleaned_data['quantities'].append(quantity)
+
         return cleaned_data
 
     def save(self, commit=True):
